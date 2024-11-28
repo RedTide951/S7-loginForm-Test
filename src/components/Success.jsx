@@ -9,7 +9,7 @@ const headerStyle = {
 const Success = () => {
   return (
     <div>
-      <h1 style={headerStyle}>Giriş Başarılı</h1>
+      <h1 style={headerStyle}>Giriş Başarılı!</h1>
     </div>
   );
 };
