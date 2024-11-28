@@ -49,4 +49,6 @@ describe("Login Form Tests", () => {
       cy.get('[data-testid="email-error-text"]').should("be.visible");
       cy.get('[data-testid="password-error-text"]').should("be.visible");
       cy.get('[data-testid="terms-error-text"]').should("be.visible");
-      cy.get('[data-testid="login-button"]').should("be.disabled"); */
+      cy.get('[data-testid="login-button"]').should("be.disabled"); 
+      pass test delete this line
+      */
