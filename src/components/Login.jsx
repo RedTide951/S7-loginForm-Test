@@ -26,11 +26,22 @@ export default function Login() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false); // State to manage button enable/disable
   const history = useHistory();
 
-  // Enable button
-  const checkButtonEnabled = (updatedForm) => {
-    const isAnyFieldValid =
-      updatedForm.email.length > 3 || updatedForm.password.length > 3;
-    setIsButtonEnabled(isAnyFieldValid);
+  // Validation Logic
+  const validateForm = (updatedForm) => {
+    const newErrors = {};
+    if (!emailRegex.test(updatedForm.email)) {
+      newErrors.email = errorMessages.email;
+    }
+    if (!passwordRegex.test(updatedForm.password)) {
+      newErrors.password = errorMessages.password;
+    }
+    if (!updatedForm.terms) {
+      newErrors.terms = errorMessages.terms;
+    }
+    setErrors(newErrors);
+
+    // Button enabled only if no validation errors exist
+    setIsButtonEnabled(Object.keys(newErrors).length === 0);
   };
 
   const handleChange = (event) => {
@@ -39,35 +50,15 @@ export default function Login() {
     const updatedForm = { ...form, [name]: updatedValue };
 
     setForm(updatedForm);
-    checkButtonEnabled(updatedForm);
-  };
 
-  //  validation
-  const validateForm = () => {
-    const newErrors = {};
-    if (!emailRegex.test(form.email)) {
-      console.log("Invalid email:", form.email);
-      newErrors.email = errorMessages.email;
-    }
-    if (!passwordRegex.test(form.password)) {
-      console.log("Invalid password:", form.password);
-      newErrors.password = errorMessages.password;
-    }
-    if (!form.terms) {
-      console.log("Terms not accepted");
-      newErrors.terms = errorMessages.terms;
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    // Validate form after every change
+    validateForm(updatedForm);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const isFormValid = validateForm();
-    console.log("Form valid:", isFormValid);
-
-    if (isFormValid) {
+    if (isButtonEnabled) {
       setForm(initialForm);
       history.push("/Success");
     } else {
@@ -87,7 +78,11 @@ export default function Login() {
           onChange={handleChange}
           value={form.email}
         />
-        {errors.email && <div className="text-danger">{errors.email}</div>}
+        {errors.email && (
+          <div className="text-danger" data-testid="email-error-text">
+            {errors.email}
+          </div>
+        )}
       </FormGroup>
       <FormGroup>
         <Label for="examplePassword">Password</Label>
@@ -100,7 +95,9 @@ export default function Login() {
           value={form.password}
         />
         {errors.password && (
-          <div className="text-danger">{errors.password}</div>
+          <div className="text-danger" data-testid="password-error-text">
+            {errors.password}
+          </div>
         )}
       </FormGroup>
       <FormGroup check>
@@ -114,10 +111,18 @@ export default function Login() {
         <Label htmlFor="terms" check>
           I agree to terms of service and privacy policy
         </Label>
-        {errors.terms && <div className="text-danger">{errors.terms}</div>}
+        {errors.terms && (
+          <div className="text-danger" data-testid="terms-error-text">
+            {errors.terms}
+          </div>
+        )}
       </FormGroup>
       <FormGroup className="text-center p-4">
-        <Button color="primary" disabled={!isButtonEnabled}>
+        <Button
+          color="primary"
+          disabled={!isButtonEnabled}
+          data-testid="login-button"
+        >
           Login
         </Button>
       </FormGroup>
